@@ -22,17 +22,17 @@ import os
 import glob
 
 # Existing model
-existing_model = '/home/peter/ml/weeds/WeedML/29-06epoch_5.h5'
+existing_model = '/home/peter/ml/weeds/WeedML/12-07epoch_5.h5'
 
 # In and out dirs (each image will be saved in dest/class)
-src = '/home/peter/ml/weeds/1207'
-dest = '/home/peter/ml/weeds/1207/clip'
+src = '/home/peter/ml/weeds/photos/1407'
+dest = '/home/peter/ml/weeds/photos/1407/clip'
 
 # keys for new classification
-key_dict = dict( {'d':'dock', 't':'thistle', 'g':'grass', 's':'stinger', 'c':'clover', 'b':'buttercup',   })
+key_dict = dict( {'d':'dock', 't':'thistle', 'g':'grass', 's':'stinger', 'c':'clover', 'b':'buttercup', 'b':'buttercup', 'x':'dandelion'   } )
 
 
-# GPU setup
+# GPU setup (for existing model)
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
   try:
@@ -59,12 +59,11 @@ def chop_photo(fn):
     im = Image.open(fn)
     w, h = im.size
 
-    # assume wide format
+    # rotate if not in wide format
     if w < h:
         im = im.rotate(90,expand=True)
         w, h = im.size
 
-    # plt.imshow(im); plt.show()
     # Crop from centre
     crop_x0, crop_y0 = (w/2.0 - 4 * 200 - 12, h/2.0 - 200 - 12)
     crop_x1, crop_y1 = (w/2.0 + 4 * 200 + 12, h/2.0 + 200 + 12)
@@ -86,11 +85,6 @@ def chop_photo(fn):
     im_clips = np.array(im_clips)
     return im_clips
 
-# test
-# im_clips = chop_photo(fn)
-# np.argmax(model.predict(im_clips/255.0,batch_size=BATCH_SIZE),axis=1)
-# maxpredpc = np.max(pred,axis=1)
-
 
 def save_in_correct_folder(e, im, root, fn, i):
     c = e.char
@@ -98,7 +92,6 @@ def save_in_correct_folder(e, im, root, fn, i):
         print('Skipping')
         root.destroy()
         return
-
     
     cl = key_dict[c]
     print('You chose: '+cl)
@@ -106,6 +99,7 @@ def save_in_correct_folder(e, im, root, fn, i):
         os.makedirs(cl)
     im.save(os.path.join(cl, fn.replace('.', '_{:03d}.'.format(i)) ))
     root.destroy()
+
 
 def show_selection_window(im_clip, i, hint,fn):
     root = tk.Tk()
@@ -136,13 +130,15 @@ os.chdir(dest)
 
 # loop over all images (kind of assumes there's a manageable number)
 
-for fn in files: #[0:10]:
-    im_clips = chop_photo(os.path.join(src,fn))
-    maxpred = np.argmax(model.predict(im_clips/255.0,batch_size=BATCH_SIZE),axis=1)
 
+for fn in files[0:1]:
+    im_clips = chop_photo(os.path.join(src,fn))
+    pred = model.predict(im_clips/255.0,batch_size=BATCH_SIZE)
+    maxpred = np.argmax(pred,axis=1)
+    
     for i in range(0,2):
         for j in range(0,8):
             index = 8*i + j
-            show_selection_window(im_clips[index], index, CLASS_NAMES[maxpred[index]],fn)
+            show_selection_window(im_clips[index], index, CLASS_NAMES[maxpred[index]] + " {:.0%}".format( pred[index][maxpred[index]]), fn)
 
 
