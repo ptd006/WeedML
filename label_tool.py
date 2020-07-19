@@ -1,14 +1,11 @@
 # Helper to tag photos fast
+# Peter Windridge (peter.windridge.org.uk) and Agrovate.co.uk
 
 # TODO: use XBox controller
 # TODO: autoaccept high confidence predictions
 # TODO: clean up imports..
 
-
-import pandas as pd
-
-# timing
-from datetime import datetime
+# Timing
 import time
 
 from keras.models import Model, load_model
@@ -22,14 +19,18 @@ import os
 import glob
 
 # Existing model
-existing_model = '/home/peter/ml/weeds/WeedML/12-07epoch_5.h5'
+existing_model = '/home/peter/ml/weeds/WeedML/19-07epoch_5.h5'
 
 # In and out dirs (each image will be saved in dest/class)
-src = '/home/peter/ml/weeds/photos/1407'
-dest = '/home/peter/ml/weeds/photos/1407/clip'
+dt = '1907'
+src = '/home/peter/ml/weeds/photos/'+dt
+dest = src+'/clip'
+if not os.path.exists(dest):
+    os.makedirs(dest)
+
 
 # keys for new classification
-key_dict = dict( {'d':'dock', 't':'thistle', 'g':'grass', 's':'stinger', 'c':'clover', 'b':'buttercup', 'b':'buttercup', 'x':'dandelion'   } )
+key_dict = dict( {'d':'dock', 't':'thistle', 'g':'grass', 's':'stinger', 'c':'clover', 'b':'buttercup', 'x':'spray'   } )
 
 
 # GPU setup (for existing model)
@@ -41,8 +42,9 @@ if gpus:
   except RuntimeError as e:
     print(e)
 
-# Classification for initial (!) model
-CLASS_NAMES = ['dock','negative','thistle']
+# Classification for initial model
+# (Should move this to separate separate file)
+CLASS_NAMES = ['dontspray','spray']
 n_classes = len(CLASS_NAMES)
 
 model = load_model(existing_model)
@@ -131,7 +133,7 @@ os.chdir(dest)
 # loop over all images (kind of assumes there's a manageable number)
 
 
-for fn in files[0:1]:
+for fn in files:
     im_clips = chop_photo(os.path.join(src,fn))
     pred = model.predict(im_clips/255.0,batch_size=BATCH_SIZE)
     maxpred = np.argmax(pred,axis=1)
