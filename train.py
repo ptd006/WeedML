@@ -1,7 +1,7 @@
-import pandas as pd # (for flow from dataframe)
+import pandas as pd
 import os
 
-from datetime import datetime # (for naming files)
+from datetime import datetime
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard, CSVLogger # need to implemented
@@ -15,7 +15,6 @@ from keras import backend as K
 # from keras.applications.inception_v3 import InceptionV3
 
 from keras.applications.resnet50 import ResNet50
-#from keras.applications.resnet50 import preprocess_input
 
 from keras.layers import Dense, GlobalAveragePooling2D
 
@@ -28,7 +27,7 @@ from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import numpy as np
 
-# WeedML working directory
+# WeedML working directory containing test.csv etc
 os.chdir('/home/peter/ml/weeds/WeedML')
 
 # start from scratch?

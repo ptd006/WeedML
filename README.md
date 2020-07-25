@@ -16,3 +16,12 @@ Work flow is still improving.  Photos are taken on a Samsung Galaxy phone (and a
 Rover plan is a Pixhawk PX4 controller [https://px4.io/] running ArduRover [https://ardupilot.org/] with u-Blox M8T RTK (rtklib) GPS but is not complete yet.
 
 Full image dataset might be released eventually along with trained model at http://www.agrovate.co.uk/.
+
+
+## Using XBox Controller for label_tool.py
+
+Game controllers are comfortable to hold and can take a beating.  Also, using them just feeling more fun.  This makes them ideal for something monotonous like labelling images!  An XBox controller can be used with https://xboxdrv.gitlab.io/.  An example config file with key mappings for label_tool.py is included in the repo.
+
+`sudo apt-get install xboxdrv`
+`sudo xboxdrv --config xboxdrv.ini`
+
