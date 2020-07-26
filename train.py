@@ -27,7 +27,7 @@ from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import numpy as np
 
-# WeedML working directory containing test.csv etc
+# WeedML working directory containing test.csv
 os.chdir('/home/peter/ml/weeds/WeedML')
 
 # start from scratch?
@@ -47,16 +47,31 @@ if gpus:
 CLASS_NAMES = ['dontspray','spray']
 n_classes = len(CLASS_NAMES)
 
-# Load the pretrained DeepWeeds ResNet50 model (starting point)
-# Then modify it for our classes
-def get_DeepWeeds_model(f,n_classes):    
-    model = load_model(f)
+# Global variables
+IMG_SIZE = (224, 224) # image size expected by the model
+RAW_IMG_SIZE = IMG_SIZE # (256, 256) had previously taken larger images and taken crops in augmentation
 
-    # freeze model- assume the pretrained model is good
+INPUT_SHAPE = (IMG_SIZE[0], IMG_SIZE[1], 3)
+BATCH_SIZE = 32
+INITIAL_LR = 0.0001
+
+# create a new model.  If f is not False it is assumed to be the DeepWeeds model path.
+def get_newModel(f,n_classes):   
+    if f == False:
+        # start from ImageNet ResNet50
+        print ('Load pretrained ResNet50')
+        model = ResNet50(weights='imagenet', include_top=False, input_shape=INPUT_SHAPE)
+        last_layer = model.output
+        last_layer = GlobalAveragePooling2D(name='avg_pool')(last_layer)
+    else:
+        print ('Load pretrained model from DeepWeeds paper (ResNet50)')
+        model = load_model(f)
+        last_layer = model.get_layer('avg_pool').output
+
+    # freeze model- assume the pretrained model is good (can't do a lot else on laptop anyway)
     model.trainable=False
 
-    # keep the GlobalAveragePooling2D
-    last_layer = model.get_layer('avg_pool').output
+    # keep the GlobalAveragePooling2D   
 
     # Now dense and softmax
     outputs = Dense(n_classes, activation='softmax', name='prediction')(last_layer)
@@ -66,26 +81,14 @@ def get_DeepWeeds_model(f,n_classes):
     return model
 
 
-if newModel:
-    print ('Load pretrained model from DeepWeeds paper')
-    model = get_DeepWeeds_model('/home/peter/ml/weeds/DeepWeeds/resnet.hdf5',n_classes)
+if newModel:    
+    model = get_newModel('/home/peter/ml/weeds/DeepWeeds/resnet.hdf5',n_classes)
+    #model = get_newModel(False,n_classes)
 else:
-    model = load_model('15-07epoch_5.h5')
+    model = load_model('26-07epoch_5.h5')
 
 model.summary()
 
-
-# Global variables
-IMG_SIZE = (224, 224) # image size expected by the model
-RAW_IMG_SIZE = IMG_SIZE # (256, 256) had previously taken larger images and taken crops in augmentation
-
-INPUT_SHAPE = (IMG_SIZE[0], IMG_SIZE[1], 3)
-MAX_EPOCH = 2
-BATCH_SIZE = 32
-FOLDS = 5
-STOPPING_PATIENCE = 32
-LR_PATIENCE = 16
-INITIAL_LR = 0.0001
 
 def img_flow(csv_file):
     datagen = ImageDataGenerator(
@@ -135,4 +138,4 @@ if newModel:
 run_date = datetime.today().strftime('%d-%m')
 callbacks = [keras.callbacks.ModelCheckpoint("/home/peter/ml/weeds/WeedML/" + run_date + "epoch_{epoch}.h5")]
 
-model.fit(train_ds, epochs=5, callbacks=callbacks, validation_data=val_ds)
+trainhist = model.fit(train_ds, epochs=5, callbacks=callbacks, validation_data=val_ds)
