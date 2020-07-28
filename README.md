@@ -1,13 +1,13 @@
 # WeedML
 
-Inspired by recent literature like [https://github.com/AlexOlsen/DeepWeeds] and efforts such as [https://forums.fast.ai/t/grassland-weed-detector/7635/82] we explore deep nets for weed recognition to be deployed on an autonomous spray robot.
+Inspired by recent literature like [https://github.com/AlexOlsen/DeepWeeds] and efforts such as [https://forums.fast.ai/t/grassland-weed-detector/7635/] we explore deep nets for weed recognition to be deployed on an autonomous spray robot.
 
-Model is currently ResNet50.  We split the input photo into 224px square boxes (with small overlap) and classify (softmax final) into spray/dontspray.  The reason for not using detectors like SSD/YOLO is speed and also that the spray application is confined to a grid anyway.
+Model is currently ResNet50 (but changes regularly :)).  We split the input photo into 224px square boxes (with small overlap) and classify (softmax) into spray/dontspray.  The reason for not using detectors like SSD/YOLO is speed and also that the spray application is confined to a grid anyway.
 
 Work flow is still improving.  Photos are taken on a Samsung Galaxy phone (and a Canon G7 for testing) from 3 farms in the UK.
 1. Files are pulled to laptop (rclone from Google photos) and rescaled aiming for around 8px/cm.  
 1. Pruning of files.
-1. label_tool.py is used.  This is a hacky tool to help label photos faster.  Photos are cropped to a central window and split into 8x2 224px square overlapping boxes, similar to what the will would do.  An existing model is used to generate predictions, which are shown to user.  A single key represents each class.  After key press the image clip is written to appropriate directory.  Tkinter is used.  As such it is fairly specific to this situation but hopefully might be useful to others.
+1. label_tool.py is used.  This is a hacky tool to help label photos faster.  Photos are cropped to a central window and split into 8x2 224px square overlapping boxes, similar to what the will would do.  An existing model is used to generate predictions, which are shown to user.  A single key represents each class.  After key press the image clip is written to appropriate directory.  Tkinter provides interface.  It is fairly specific to this situation but hopefully might be useful to others.  XBox controller can be used.
 1. resample_new_photos.py is run (70% of each class moved to train and rest to test).
 1. generate_labels_csv.py is run (this code could be combined with previous step).  This creates the labels spray and dontspray (binary classification) in train.csv and test.csv.
 1. train.py loads the images and labels specified in train.csv (and test.csv) using Keras `flow_from_dataframe` and does transfer learning from DeepWeeds ResNet50 model.
@@ -20,8 +20,8 @@ Full image dataset might be released eventually along with trained model at http
 
 ## Using XBox Controller for label_tool.py
 
-Game controllers are comfortable to hold and can take a beating.  Also, using them just feeling more fun.  This makes them ideal for something monotonous like labelling images!  An XBox controller can be used with https://xboxdrv.gitlab.io/.  An example config file with key mappings for label_tool.py is included in the repo.
+Game controllers are comfortable to hold and can take a beating.  Also, using them just feels more fun.  This makes them ideal for something monotonous like labelling images!  An XBox controller can be used with https://xboxdrv.gitlab.io/.  An example config file with key mappings for label_tool.py is included in the repo.
 
-`sudo apt-get install xboxdrv`
-`sudo xboxdrv --config xboxdrv.ini`
+    sudo apt-get install xboxdrv
+    sudo xboxdrv --config xboxdrv.ini
 
