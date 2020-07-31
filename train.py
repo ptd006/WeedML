@@ -4,12 +4,13 @@ import os
 from datetime import datetime
 
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard, CSVLogger # need to implemented
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+# also consider some scheduled decrease in LR: https://keras.io/api/callbacks/learning_rate_scheduler/
+
 from keras.optimizers import Adam
 
-
 from keras.models import Model, load_model
-from keras import backend as K
+# from keras import backend as K
 
 # TODO: try InceptionV3
 # from keras.applications.inception_v3 import InceptionV3
@@ -21,8 +22,6 @@ from keras.layers import Dense, GlobalAveragePooling2D
 from keras.preprocessing import image_dataset_from_directory
 
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -31,7 +30,7 @@ import numpy as np
 os.chdir('/home/peter/ml/weeds/WeedML')
 
 # start from scratch?
-newModel = True
+newModel = False
 
 # GPU setup
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -64,7 +63,7 @@ def get_newModel(f,n_classes,trainable=False):
         last_layer = GlobalAveragePooling2D(name='avg_pool')(last_layer)
     elif f == 'MobileNetV2':        
         print ('Load pretrained MobileNetV2')
-        model = tf.keras.applications.MobileNetV2(weights='imagenet', include_top=False, input_shape=INPUT_SHAPE)
+        model = keras.applications.MobileNetV2(weights='imagenet', include_top=False, input_shape=INPUT_SHAPE)
         last_layer = model.output
         last_layer = GlobalAveragePooling2D(name='avg_pool')(last_layer)        
     else:
@@ -91,12 +90,12 @@ if newModel:
     model = get_newModel('/home/peter/ml/weeds/DeepWeeds/resnet.hdf5',n_classes)
     #model = get_newModel('MobileNetV2',n_classes,False)    
 else:
-    model = load_model('MNv2_28-07_5.h5')# 26-07epoch_5.h5')
+    model = load_model('DW_28-07_4.h5')# 26-07epoch_5.h5')
 
 model.summary()
 
 
-def img_flow(csv_file):
+def img_flow(csv_file,base_path):
     datagen = ImageDataGenerator(
                 rescale=1. / 255,
                 fill_mode="reflect",
@@ -109,6 +108,7 @@ def img_flow(csv_file):
 
     return datagen.flow_from_dataframe(
         dataframe=pd.read_csv(csv_file),
+        directory=base_path,
         x_col='Filename', 
         y_col='Label', 
         class_mode='categorical',
@@ -120,8 +120,12 @@ def img_flow(csv_file):
         )
 
 # assumes files are train.csv and test.csv
-train_ds = img_flow('train.csv')
-val_ds = img_flow('test.csv')
+base_path = '/home/peter/ml/weeds/traintestimages'
+train_ds = img_flow('train.csv',base_path)
+val_ds = img_flow('test.csv',base_path)
+
+
+print ('{0:.0%} are spray '.format(np.mean(train_ds.labels)) )
 
 demo_batch = val_ds[4]
 
