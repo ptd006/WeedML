@@ -25,10 +25,31 @@ Game controllers are comfortable to hold and can take a beating.  Also, using th
     sudo apt-get install xboxdrv
     sudo xboxdrv --config xboxdrv.ini
 
-## Training
+## Model architecture and training
 
-More details coming!
+More details coming soon!
 
 ## Rover
 
 Rover plan is a Pixhawk PX4 controller [https://px4.io/] running ArduRover [https://ardupilot.org/] with u-Blox M8T RTK (rtklib) GPS but is not complete yet.
+
+
+## Testing on Android Phone
+
+A live version in your pocket is handy for testing.  Quick summary-
+
+1. Convert to TensorFlow lite https://www.tensorflow.org/lite/convert:
+`tflite_convert --output_file=WeedML.tflite --keras_model_file=/home/peter/ml/weeds/WeedML/MNv2_01-08_47.h5`
+
+1. Use demo code https://github.com/tensorflow/examples/tree/master/lite/examples/image_classification/android
+
+Tutorial clicky https://codelabs.developers.google.com/codelabs/recognize-flowers-with-tensorflow-on-android/
+
+## Testing with webcam
+
+Logitech C920 Pro is *just about* good enough (image quality and speed) for real time recognition.  See [run_model_webcam.py].
+
+A few frames can be grabbed with:
+`ffmpeg -f video4linux2 -s 1600x896 -i /dev/video2  -frames 10 -q:v 1 /tmp/%03d.jpg`
+
+Use guvcview to play with settings (recommend disabling autofocus in actual usage)
