@@ -1,0 +1,11 @@
+Folder,dock,thistle,stinger,grass,buttercup,clover,spray,dontspray,Label
+dock,1,0,0,1,0,0,1,0,spray
+iNatdock,1,0,0,0,0,0,1,0,spray
+iNatstinger,0,0,1,0,0,0,1,0,spray
+thistle,0,1,0,1,0,0,1,0,spray
+grass,0,0,0,1,0,0,0,1,dontspray
+stinger,0,0,1,1,0,0,1,0,spray
+clover,0,0,0,1,0,1,0,1,dontspray
+buttercup,0,0,0,0,1,0,0,1,dontspray
+dandelion,0,0,0,1,0,0,1,0,spray
+spray,0,0,0,1,0,0,1,0,spray
