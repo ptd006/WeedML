@@ -53,3 +53,18 @@ A few frames can be grabbed with:
 `ffmpeg -f video4linux2 -s 1600x896 -i /dev/video2  -frames 10 -q:v 1 /tmp/%03d.jpg`
 
 Use guvcview to play with settings (recommend disabling autofocus in actual usage)
+
+
+## Multiclass test results
+Experiment with binary multiclass.  Buttercups are missed a lot but interestingly model still correctly says dontspray.
+
+|           | count | class | spray |
+|-----------|-------|-------|-------|
+| dock      | 573   | 94.1% | 96.0% |
+| thistle   | 214   | 86.9% | 92.5% |
+| stinger   | 61    | 78.7% | 93.4% |
+| grass     | 2002  | 99.9% | 96.1% |
+| buttercup | 89    | 39.3% | 95.5% |
+| clover    | 114   | 75.4% | 97.4% |
+| spray     | 870   | 94.6% | 94.6% |
+| dontspray | 1132  | 96.7% | 97.2% |
