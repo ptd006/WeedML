@@ -56,7 +56,8 @@ Use guvcview to play with settings (recommend disabling autofocus in actual usag
 
 
 ## Multiclass test results
-Experiment with binary multiclass.  Buttercups are missed a lot but interestingly model still correctly says dontspray.
+Experiment with binary multiclass.  It actually improves the test results on binary spray/dontspray even though 
+training images are not properly labelled that way.  Buttercups are missed a lot but interestingly model still correctly says dontspray!
 
 |           | count | class | spray |
 |-----------|-------|-------|-------|
