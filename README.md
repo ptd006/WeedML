@@ -39,18 +39,20 @@ Rover plan is a Pixhawk PX4 controller [https://px4.io/] running ArduRover [http
 A live version in your pocket is handy for testing.  Quick summary-
 
 1. Convert to TensorFlow lite https://www.tensorflow.org/lite/convert:
-`tflite_convert --output_file=WeedML.tflite --keras_model_file=/home/peter/ml/weeds/WeedML/MNv2_01-08_47.h5`
+    tflite_convert --output_file=WeedML.tflite --keras_model_file=/home/peter/ml/weeds/WeedML/MNv2_01-08_47.h5
 
 1. Use demo code https://github.com/tensorflow/examples/tree/master/lite/examples/image_classification/android
 
 Tutorial clicky https://codelabs.developers.google.com/codelabs/recognize-flowers-with-tensorflow-on-android/
+
+See `tflite_android_app_deply.py` to generate labels, convert model, build apk and install on connected phone for quick testing.
 
 ## Testing with webcam
 
 Logitech C920 Pro is *just about* good enough (image quality and speed) for real time recognition.  See [run_model_webcam.py].
 
 A few frames can be grabbed with:
-`ffmpeg -f video4linux2 -s 1600x896 -i /dev/video2  -frames 10 -q:v 1 /tmp/%03d.jpg`
+    ffmpeg -f video4linux2 -s 1600x896 -i /dev/video2  -frames 10 -q:v 1 /tmp/%03d.jpg
 
 Use guvcview to play with settings (recommend disabling autofocus in actual usage)
 
